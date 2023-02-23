@@ -98,8 +98,8 @@ public class MeshGenerator : MonoBehaviour
             //amp = s / k;
             foreach (Wave wave in waves)
             {
-                store.x += originalPos[i].x + wave.direction.x * wave.GetAmp() * Mathf.Cos(G(originalPos[i], wave));
-                store.z += originalPos[i].z + wave.direction.z * wave.GetAmp() * Mathf.Cos(G(originalPos[i], wave));
+                store.x += originalPos[i].x + wave.direction.x * wave.s * Mathf.Cos(G(originalPos[i], wave));
+                store.z += originalPos[i].z + wave.direction.z * wave.s * Mathf.Cos(G(originalPos[i], wave));
             }
             //store.z = _vertices[i].z;
             _vertices[i] = store;
@@ -115,17 +115,18 @@ public class MeshGenerator : MonoBehaviour
     public float GetHeightAtWorldPosition(Vector3 pos)
     {
         Vector3 store = new();
-        float x = Mathf.RoundToInt(pos.x);
-        float z = Mathf.RoundToInt(pos.z);
+        Vector3 v = pos;
         float y = 0;
         foreach (Wave wave in waves)
         {
+            v = pos;
             //store = Vector3.zero;
-            //store.x = x + wave.direction.x * wave.GetAmp() * Mathf.Cos(G(pos, wave));
-            //store.z = z + wave.direction.z * wave.GetAmp() * Mathf.Cos(G(pos, wave));
-            //y += wave.GetAmp() * Mathf.Sin(G(store, wave));
-
-            y += wave.GetAmp() * Mathf.Sin(G(pos, wave));
+            store.x = v.x + wave.direction.x * wave.s * Mathf.Cos(G(v, wave));
+            store.z = v.z + wave.direction.z * wave.s * Mathf.Cos(G(v, wave));
+            float distance = Vector3.Distance(store, v);
+            v = new Vector3(v.x - distance, 0, v.z - distance);
+            y += wave.s * Mathf.Sin(G(v, wave));
+            store = Vector3.zero;
         }
         //pos -= (store - pos);
 
@@ -137,16 +138,14 @@ public class MeshGenerator : MonoBehaviour
         float y = 0;
         foreach (Wave wave in waves)
         {
-            y += wave.GetAmp() * Mathf.Sin(G(pos, wave));
+            y += wave.s * Mathf.Sin(G(pos, wave));
         } 
         return y;
     }
     private float G(Vector3 pos, Wave wave)
     {
-        //float x = Mathf.RoundToInt(pos.x);
-        //float z = Mathf.RoundToInt(pos.z);
         float k;
         k = (2 * Mathf.PI) / wave.lmbd;
-        return k * (wave.direction.x * pos.x + wave.direction.z * pos.z - wave.offset - wave.flowSpeed * Time.time);
+        return k * (wave.direction.x * pos.x + wave.direction.z * pos.z + wave.offset + wave.flowSpeed * Time.time);
     }
 }

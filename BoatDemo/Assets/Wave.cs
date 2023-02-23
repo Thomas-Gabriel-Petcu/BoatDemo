@@ -6,10 +6,11 @@ using UnityEngine;
 [Serializable]
 public class Wave
 {
-    [Range(0.0001f, 1f)]
+    [Range(0f, 1f)]
     public float s;
-    //public float amp;
-    [Range(0.0001f, int.MaxValue)]
+    [Range(0f, 1f)]
+    public float amp;
+    [Range(0.0001f, 2* Mathf.PI)]
     public float lmbd;
     public float flowSpeed;
     [Range(1f, 2f)]
@@ -17,9 +18,9 @@ public class Wave
     public float offset;
     public Vector3 direction;
 
-    public float GetAmp()
-    {
-        float k = (Mathf.PI * 2) / lmbd;
-        return s / k;
-    }
+    //public float GetSteepness()
+    //{
+    //    float k = 2 * Mathf.PI / lmbd;
+    //    return amp / k;
+    //}
 }
