@@ -12,7 +12,6 @@ public class MeshGenerator : MonoBehaviour
     private int[] _trianglePoints;
     public int quadxSize = 2;
     public int quadzSize = 2;
-    //public float vertexSpacing;
     public int numberOfWaves;
 
     [Header("wave settings")]
@@ -94,21 +93,14 @@ public class MeshGenerator : MonoBehaviour
         Vector3 store = new Vector3();
         for (int i = 0; i < _vertices.Length; i++)
         {
-            //k = (2 * Mathf.PI) / lmbd;
-            //amp = s / k;
             foreach (Wave wave in waves)
             {
                 store.x += originalPos[i].x + wave.direction.x * wave.s * Mathf.Cos(G(originalPos[i], wave));
                 store.z += originalPos[i].z + wave.direction.z * wave.s * Mathf.Cos(G(originalPos[i], wave));
+                store.y += wave.s * Mathf.Sin(G(originalPos[i], wave));
             }
-            //store.z = _vertices[i].z;
             _vertices[i] = store;
-            _vertices[i].y = GetWaveHeight(originalPos[i]);
             store = Vector3.zero;
-            //_vertices[i].x = xOrigins[i] + amp * Mathf.Cos(G(xOrigins[i]));
-            //_vertices[i].y = amp * Mathf.Sin(G(xOrigins[i]));
-            //Color color = new Color();
-            //color = Color.Lerp();
         }
     }
 
@@ -117,29 +109,30 @@ public class MeshGenerator : MonoBehaviour
         Vector3 store = new();
         Vector3 v = pos;
         float y = 0;
-        foreach (Wave wave in waves)
+        //foreach (Wave wave in waves)
+        //{
+        //    v = pos;
+        //    store.x = v.x + wave.direction.x * wave.s * Mathf.Cos(G(v, wave));
+        //    store.z = v.z + wave.direction.z * wave.s * Mathf.Cos(G(v, wave));
+        //    float distance = Vector3.Distance(store, v);
+        //    v = new Vector3(v.x - distance, 0, v.z - distance);
+        //    y += wave.s * Mathf.Sin(G(v, wave));
+        //    store = Vector3.zero;
+        //}
+        
+        for (int i = 0; i < 1; i++)
         {
             v = pos;
-            //store = Vector3.zero;
-            store.x = v.x + wave.direction.x * wave.s * Mathf.Cos(G(v, wave));
-            store.z = v.z + wave.direction.z * wave.s * Mathf.Cos(G(v, wave));
+            store.x = v.x + waves[i].direction.x * waves[i].s * Mathf.Cos(G(v, waves[i]));
+            store.z = v.z + waves[i].direction.z * waves[i].s * Mathf.Cos(G(v, waves[i]));
             float distance = Vector3.Distance(store, v);
             v = new Vector3(v.x - distance, 0, v.z - distance);
-            y += wave.s * Mathf.Sin(G(v, wave));
+            y += waves[i].s * Mathf.Sin(G(v, waves[i]));
             store = Vector3.zero;
         }
         //pos -= (store - pos);
 
         //return GetWaveHeight(pos);
-        return y;
-    }
-    public float GetWaveHeight(Vector3 pos)
-    {
-        float y = 0;
-        foreach (Wave wave in waves)
-        {
-            y += wave.s * Mathf.Sin(G(pos, wave));
-        } 
         return y;
     }
     private float G(Vector3 pos, Wave wave)
